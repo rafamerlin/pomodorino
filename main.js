@@ -1,8 +1,7 @@
 //Example from: https://www.youtube.com/watch?v=jKzBJAowmGg
-
 const electron = require('electron');
 const {app, BrowserWindow, Menu, Tray} = electron;
-
+const player = require('play-sound')(opts = {});
 
 app.on('ready', () => {
     let win = new BrowserWindow({width:800, height:600});
@@ -14,7 +13,6 @@ exports.openWindow = () =>
 {
     let win = new BrowserWindow({width:400, height:200});
     win.loadURL(`file://${__dirname}/bear.html`);
-
 }
 
 let tray = null
@@ -28,5 +26,9 @@ app.on('ready', () => {
   ])
   tray.setToolTip('This is my application.')
   tray.setContextMenu(contextMenu)
+
+  player.play(`${__dirname}/audio/ring.mp3`, function(err){
+     if (err) throw err
+  })
 })
 

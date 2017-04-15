@@ -6,4 +6,4 @@ button.textContent = 'Open Window';
 button.addEventListener('click', () => {
     main.openWindow();
 }, false)
-document.body.appendChild(button);
+document.body.appendChild(button);  

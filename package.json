@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron-prebuilt": "^1.2.5"
+  },
+  "dependencies": {
+    "play-sound": "^1.1.1"
   }
 }
