@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "jimp": "^0.2.27",
-    "play-sound": "^1.1.1"
+    "play-sound": "^1.1.1",
+    "timrjs": "^1.0.1"
   }
 }

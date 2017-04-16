@@ -1,24 +1,15 @@
-//Example from: https://www.youtube.com/watch?v=jKzBJAowmGg
 const electron = require('electron')
 const { app, BrowserWindow, Menu, Tray, nativeImage } = electron
 const player = require('play-sound')(opts = {})
+const Timr = require('timrjs')
 
-app.on('ready', () => {
-  // let win = new BrowserWindow({ width: 800, height: 600 })
-  // win.loadURL(`file://${__dirname}/index.html`)
-  // win.webContents.openDevTools()
-})
+const trayImg = `${__dirname}/res/tomato.png`
 
-//Exports:
-exports.openWindow = () => {
-  let win = new BrowserWindow({ width: 400, height: 200 })
-  win.loadURL(`file://${__dirname}/bear.html`)
-}
-
-
+let timer = Timr(0)
 let tray = null
+
 app.on('ready', () => {
-  tray = new Tray(`${__dirname}/res/tomato.png`)
+  tray = new Tray(trayImg)
   const contextMenu = Menu.buildFromTemplate([
     { id: '25', label: '25', type: 'normal', click: menuClick },
     { id: '15', label: '15', type: 'normal', click: menuClick },
@@ -26,28 +17,33 @@ app.on('ready', () => {
     { type: 'separator' },
     { id: '-1', label: 'Quit', type: 'normal', click: menuClick },
   ])
-  tray.setToolTip('This is my application.')
+  resetTray()
   tray.setContextMenu(contextMenu)
 })
 
 function menuClick(menuItem, browserWindow, event) {
-  if (menuItem.id > 0){
-    updateTray(menuItem.id);
-  }else if(menuItem.id == -1){
+  if (menuItem.id > 0) {
+    startTimer(menuItem.id);
+  } else if (menuItem.id == -1) {
     app.quit();
   }
 }
 
 function updateTray(timeLeft) {
-  generateImage(timeLeft, (img) => {
+  generateImage(timeLeft.toString(), (img) => {
     tray.setImage(img);
   });
 }
 
+function resetTray() {
+  tray.setToolTip('Pomodorino by Merurino')
+  tray.setImage(trayImg)
+}
+
 function generateImage(overlayText, updateTray) {
-  var Jimp = require("jimp");
-  var fileName = `${__dirname}/res/tomato.png`;
-  var centralizeX = (overlayText > 9) ? 8 : 12;
+  let Jimp = require("jimp");
+  let fileName = `${__dirname}/res/tomato.png`;
+  let centralizeX = (overlayText.length > 1) ? 8 : 12;
 
   Jimp.read(fileName)
     .then(function (image) {
@@ -57,7 +53,7 @@ function generateImage(overlayText, updateTray) {
     .then(function (font) {
       loadedImage.print(font, centralizeX, 8, overlayText)
         .getBuffer(Jimp.AUTO, function (err, src) {
-          var bufferedImage = nativeImage.createFromBuffer(src);
+          let bufferedImage = nativeImage.createFromBuffer(src);
           updateTray(bufferedImage);
         });
     })
@@ -70,4 +66,23 @@ function playAlarm() {
   player.play(`${__dirname}/audio/ring.mp3`, function (err) {
     if (err) throw err
   })
+}
+
+function startTimer(time) {
+  timer.destroy()
+  timer = Timr(time * 60)
+  timer.start();
+  timer.ticker(({ formattedTime, raw }) => {
+    tray.setToolTip(`Pomodorino: ${formattedTime} left`)
+    if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
+      updateTray(+raw.currentMinutes + 1)
+    }
+    if (raw.currentMinutes == 0 && raw.currentSeconds != 0) {
+      updateTray(+raw.currentSeconds)
+    }
+  });
+  timer.finish((self) => {
+    playAlarm();
+    resetTray();
+  });
 }
