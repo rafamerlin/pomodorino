@@ -5,10 +5,12 @@ const Timr = require('timrjs')
 
 const trayImg = `${__dirname}/res/tomato.png`
 
+let isWin = false
 let timer = Timr(0)
 let tray = null
 
 app.on('ready', () => {
+  isWin = process.platform == "win32"
   tray = new Tray(trayImg)
   const contextMenu = Menu.buildFromTemplate([
     { id: '25', label: '25', type: 'normal', click: menuClick },
@@ -43,15 +45,18 @@ function resetTray() {
 function generateImage(overlayText, updateTray) {
   let Jimp = require("jimp");
   let fileName = `${__dirname}/res/tomato.png`;
-  let centralizeX = (overlayText.length > 1) ? 8 : 12;
+  let calculatedY = isWin ? 0 : 8
+  let calculatedX = isWin ? 
+       (overlayText.length > 1) ? 0 : 8
+     : (overlayText.length > 1) ? 8 : 12
 
   Jimp.read(fileName)
     .then(function (image) {
       loadedImage = image;
-      return Jimp.loadFont(Jimp.FONT_SANS_16_BLACK);
+      return Jimp.loadFont(isWin ? Jimp.FONT_SANS_32_BLACK : Jimp.FONT_SANS_16_BLACK);
     })
     .then(function (font) {
-      loadedImage.print(font, centralizeX, 8, overlayText)
+      loadedImage.print(font, calculatedX, calculatedY, overlayText)
         .getBuffer(Jimp.AUTO, function (err, src) {
           let bufferedImage = nativeImage.createFromBuffer(src);
           updateTray(bufferedImage);
@@ -69,6 +74,7 @@ function playAlarm() {
 }
 
 function startTimer(time) {
+  updateTray(time)
   timer.destroy()
   timer = Timr(time * 60)
   timer.start();

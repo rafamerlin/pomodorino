@@ -27,3 +27,4 @@ node_modules/
 *.vcxproj.filters
 *.sln
 *.log
+mplayer.exe
