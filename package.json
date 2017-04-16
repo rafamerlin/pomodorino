@@ -1,12 +1,13 @@
 {
-  "name": "getting-started-with-electron-1.0",
+  "name": "pomodorino",
+  "productName" : "Pomodorino",
   "version": "0.1.0",
   "description": "",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js"
   },
-  "author": "Kyle Robinson Young <kyle@dontkry.com> (http://dontkry.com)",
+  "author": "Rafael Merlin <rafamerlin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "electron-prebuilt": "^1.2.5"
