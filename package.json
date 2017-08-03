@@ -1,6 +1,6 @@
 {
   "name": "pomodorino",
-  "productName" : "Pomodorino",
+  "productName": "Pomodorino",
   "version": "0.1.0",
   "description": "",
   "main": "main.js",
@@ -10,10 +10,11 @@
   "author": "Rafael Merlin <rafamerlin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron-prebuilt": "^1.2.5"
+    "electron": "^1.6.1"
   },
   "dependencies": {
     "jimp": "^0.2.27",
+    "node-notifier": "^5.1.2",
     "play-sound": "^1.1.1",
     "timrjs": "^1.0.1"
   }

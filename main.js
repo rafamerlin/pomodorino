@@ -2,6 +2,7 @@ const electron = require('electron')
 const { app, BrowserWindow, Menu, Tray, nativeImage } = electron
 const player = require('play-sound')(opts = {})
 const Timr = require('timrjs')
+const notifier = require('node-notifier')
 
 const trayImg = `${__dirname}/res/tomato.png`
 
@@ -70,7 +71,13 @@ function generateImage(overlayText, updateTray) {
 function playAlarm() {
   player.play(`${__dirname}/audio/ring.mp3`, function (err) {
     if (err) throw err
-  })
+  });
+  notifier.notify({
+    'title': 'Pomodorino',
+    'message': 'Your pomodoro has finished',
+    'icon': `${__dirname}/res/tomato.png`,
+    wait: true
+  });
 }
 
 function startTimer(time) {
