@@ -5,10 +5,12 @@ const Timr = require('timrjs')
 const notifier = require('node-notifier')
 
 const trayImg = `${__dirname}/res/tomato.png`
+const trayImgAlert = `${__dirname}/res/yomato.png`
 
 let useBiggerFonts = false
 let timer = Timr(0)
 let tray = null
+let alertMode = false
 
 app.on('ready', () => {
   useBiggerFonts = (process.platform == "win32")
@@ -22,10 +24,26 @@ app.on('ready', () => {
   ])
   resetTray()
   tray.setContextMenu(contextMenu)
+  tray.on('click', () => {
+    if (alertMode){
+      disableAlertMode();
+    }
+  })
 })
+
+function enableAlertMode(){
+  alertMode = true;
+}
+
+function disableAlertMode(){
+  timer.stop()
+  alertMode = false
+  resetTray()
+}
 
 function menuClick(menuItem, browserWindow, event) {
   if (menuItem.id > 0) {
+    disableAlertMode()
     startTimer(menuItem.id);
   } else if (menuItem.id == -1) {
     app.quit();
@@ -43,7 +61,7 @@ function resetTray() {
   tray.setImage(trayImg)
 }
 
-function generateImage(overlayText, updateTray) {
+function generateImage(overlayText, setTrayImageClosure) {
   let Jimp = require("jimp");
   let fileName = `${__dirname}/res/tomato.png`;
   let calculatedY = useBiggerFonts ? 0 : 8
@@ -60,7 +78,7 @@ function generateImage(overlayText, updateTray) {
       loadedImage.print(font, calculatedX, calculatedY, overlayText)
         .getBuffer(Jimp.AUTO, function (err, src) {
           let bufferedImage = nativeImage.createFromBuffer(src);
-          updateTray(bufferedImage);
+          setTrayImageClosure(bufferedImage);
         });
     })
     .catch(function (err) {
@@ -68,9 +86,10 @@ function generateImage(overlayText, updateTray) {
     });
 }
 
-function playAlarm() {
+function finishPomodoro() {
   player.play(`${__dirname}/audio/ring.mp3`, function (err) {
-    if (err) throw err
+    //Don't throw error if audio library fails, as it does in windows if none compatible audio library installed.
+    //if (err) throw err
   });
   notifier.notify({
     'title': 'Pomodorino',
@@ -78,6 +97,7 @@ function playAlarm() {
     'icon': `${__dirname}/res/tomato.png`,
     wait: true
   });
+  enableAlertMode()
 }
 
 function startTimer(time) {
@@ -85,16 +105,24 @@ function startTimer(time) {
   timer = Timr(time * 60)
   timer.start();
   timer.ticker(({ formattedTime, raw }) => {
-    tray.setToolTip(`Pomodorino: ${formattedTime} left`)
-    if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
-      updateTray(+raw.currentMinutes + 1)
+    if (!alertMode){
+      tray.setToolTip(`Pomodorino: ${formattedTime} left`)
+      if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
+        updateTray(+raw.currentMinutes + 1)
+      }
+      if (raw.currentMinutes == 0 && raw.currentSeconds != 0) {
+        updateTray(+raw.currentSeconds)
+      }
     }
-    if (raw.currentMinutes == 0 && raw.currentSeconds != 0) {
-      updateTray(+raw.currentSeconds)
+    else{  
+      tray.setImage(raw.currentSeconds % 2 == 0 ? trayImgAlert : trayImg)      
     }
   });
   timer.finish((self) => {
-    playAlarm();
-    resetTray();
+    if (!alertMode){
+      finishPomodoro();
+      resetTray();
+      timer.start(1500);
+    }
   });
 }
