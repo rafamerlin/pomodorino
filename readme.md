@@ -5,6 +5,10 @@ Pomodorino is the diminutive of pomodoro (so it would be equivalent to Cherry To
 
 It is recommended to check the technique in more details on the [official website](https://cirillocompany.de/pages/pomodoro-technique)
 
+How it works:
+
+![Windows](./docs/pomodorino_win.gif)
+
 #### I want to add more or change the timers:
 Just search on `main.js` for `{ id: '25', label: '25', type: 'normal', click: menuClick },`
 This is the line that adds the 25 mins timer. You just add more or remove them. What is used as the time is the id field, so you an change the label for anything you need to.
