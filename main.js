@@ -1,16 +1,16 @@
 const electron = require('electron')
 const { app, BrowserWindow, Menu, Tray, nativeImage } = electron
-const player = require('play-sound')(opts = {})
 const Timr = require('timrjs')
 const notifier = require('node-notifier')
-
 const trayImg = `${__dirname}/res/tomato.png`
 const trayImgAlert = `${__dirname}/res/yomato.png`
+const { ipcMain } = require('electron');
 
 let useBiggerFonts = false
 let timer = Timr(0)
 let tray = null
 let alertMode = false
+let invisibleRenderer = null;
 
 app.on('ready', () => {
   useBiggerFonts = (process.platform == "win32")
@@ -29,6 +29,8 @@ app.on('ready', () => {
       disableAlertMode();
     }
   })
+  invisibleRenderer = new BrowserWindow({width: 100, height: 100, show: false})
+  invisibleRenderer.loadURL(`${__dirname}/renderer.html`);
 })
 
 function enableAlertMode(){
@@ -87,16 +89,17 @@ function generateImage(overlayText, setTrayImageClosure) {
 }
 
 function finishPomodoro() {
-  player.play(`${__dirname}/audio/ring.mp3`, function (err) {
-    //Don't throw error if audio library fails, as it does in windows if none compatible audio library installed.
-    //if (err) throw err
-  });
+  let AudioConfig = {
+    source: `${__dirname}/audio/ring-fixed-bitrate.mp3`
+  };
+
   notifier.notify({
     'title': 'Pomodorino',
     'message': 'Your pomodoro has finished',
     'icon': `${__dirname}/res/tomato.png`,
     wait: true
   });
+  invisibleRenderer.webContents.send('play-audio', AudioConfig);
   enableAlertMode()
 }
 

@@ -8,8 +8,8 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceRoot}/main.js",
-            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "program": "${workspaceFolder}/main.js",
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
             "runtimeArgs": [
                 ".",
                 "--enable-logging"
@@ -17,5 +17,3 @@
         }
     ]
 }
-
-
