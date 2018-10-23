@@ -10,12 +10,13 @@
   "author": "Rafael Merlin <rafamerlin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^1.6.1"
+    "electron": "^4.0.0-nightly.20181010"
   },
   "dependencies": {
+    "howler": "^2.0.15",
     "jimp": "^0.2.27",
     "node-notifier": "^5.1.2",
-    "play-sound": "^1.1.1",
-    "timrjs": "^1.0.1"
+    "timrjs": "^1.0.1",
+    "web-audio-api": "^0.2.2"
   }
 }
