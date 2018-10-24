@@ -30,7 +30,7 @@ app.on('ready', () => {
     }
   })
   invisibleRenderer = new BrowserWindow({width: 100, height: 100, show: false})
-  invisibleRenderer.loadURL(`${__dirname}/renderer.html`);
+  invisibleRenderer.loadURL(`file://${__dirname}/renderer.html`);
 })
 
 function enableAlertMode(){
