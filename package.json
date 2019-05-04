@@ -1,7 +1,7 @@
 {
   "name": "pomodorino",
   "productName": "Pomodorino",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "author": "Rafael Merlin <rafamerlin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^3.0.4",
+    "electron": "^5.0.1",
     "electron-builder": "^20.39.0",
     "eslint": "^5.16.0"
   },
@@ -26,11 +26,7 @@
     "appId": "Pomodorino",
     "mac": {
       "category": "Time.Management"
-    },
-    "extraFiles": [
-      "res/"
-    ]
+    }
   },
   "postinstall": "electron-builder install-app-deps"
-
 }

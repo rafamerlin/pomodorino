@@ -29,7 +29,13 @@ app.on('ready', () => {
       disableAlertMode();
     }
   })
-  invisibleRenderer = new BrowserWindow({width: 100, height: 100, show: false})
+  invisibleRenderer = new BrowserWindow(
+    {
+      width: 100,
+      height: 100,
+      show: false,
+      webPreferences: { nodeIntegration: true }
+    })
   invisibleRenderer.loadURL(`file://${__dirname}/renderer.html`);
 })
 
@@ -106,7 +112,7 @@ function finishPomodoro() {
 
 function startTimer(time) {
   timer.destroy()
-  timer = Timr(time * 1)
+  timer = Timr(time * 60)
   timer.start();
   timer.ticker(({ formattedTime, raw }) => {
     if (!alertMode){
