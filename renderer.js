@@ -1,10 +1,10 @@
 (function () {
 
     const { ipcRenderer } = require('electron');
-    const { Howl, Howler } = require('howler');
+    const { Howl } = require('howler');
 
-    ipcRenderer.on("play-audio", (event, args) => {
-        var sound = new Howl({
+    ipcRenderer.on("play-audio", (_event, args) => {
+        new Howl({
             src: [args.source]
         }).play();
     })

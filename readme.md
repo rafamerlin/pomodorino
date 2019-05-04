@@ -13,27 +13,45 @@ How it works:
 Just search on `main.js` for `{ id: '25', label: '25', type: 'normal', click: menuClick },`
 This is the line that adds the 25 mins timer. You just add more or remove them. What is used as the time is the id field, so you an change the label for anything you need to.
 
-#### Building for use:
-First we clone this repo and install all of its dependencies:
-`npm install`
-
-Then we install the electron-packager:
-`npm install electron-packager -g`
-
-And we run on Pomodorino's source folder the following:
-`electron-packager .` 
-
-It will create a folder with all the necessary file (you can move this folder to where you want it). If you're running it on Windows, check the Troubleshoot session.
-
-#### Troubleshoot for Windows:
-In case the audio fails to play on Windows, you need to download mplayer.exe and add it to the same folder of the application executable file. (I got mine on [https://sourceforge.net/projects/mplayerwin/](https://sourceforge.net/projects/mplayerwin/))
-
-After the package generation, find mplayer inside the `resources/app` folder and move it to the same folder as `Pomodorino.exe` so it will work.
-
 #### Where I want this app to get to:
 I intend to generate a proper release for it, as the installation process I managed to do here is not good enough yet. I still have to learn more about Electron to be able to achieve these goals.
 
-This app was tested on Manjaro Linux XFCE and Windows 8.1 (for windows I needed the troubleshoot), hopefully it will work fine on Mac OS and other Linux distros as well.
+This app was tested on Manjaro Linux XFCE, Windows 8.1 and Windows 10, hopefully it will work fine on Mac OS and other Linux distros as well.
+
+I will try to play around with Travis CI in order to create releases for it.
+
+### Some notes if you want to run the project locally:
+
+I've had many issues while trying to test some changes while using Windows, had some issues with `speaker` module but the reason was I was using a non lts version of node, rolled back t a lts and it seems to work fine, but after the rollback had these issues:
+Some errors in `node-gyp`, that were solved by following the Windows Option 1 on the steps given here (https://github.com/nodejs/node-gyp), and then I had to remove my `node_modules` folder, the `package-lock.json` and use `yarn` from there onwards (I was using npm beforehand)
+
+Based on some reading, `node-gyp` should work fine in Linux. The gyp issue is more related to windows, so I may try to upgrade node again in Linux.
+
+To run it in Visual Studio Code, this launch.json file should work:
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceFolder}\\main.js",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+            "runtimeArgs": [
+                ".",
+                "--enable-logging"
+            ],
+            "env": {},
+        }
+    ]
+}
+```
+
+To test packaging locally: 
+
+`yarn dist`
 
 #### Credits:
 - Tomato Icon: [Designed by Freepik](http://www.freepik.com/free-vector/delicious-ingredients-for-pizza_921351.htm)

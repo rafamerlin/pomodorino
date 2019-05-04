@@ -5,18 +5,32 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron main.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "author": "Rafael Merlin <rafamerlin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^3.0.4"
+    "electron": "^3.0.4",
+    "electron-builder": "^20.39.0",
+    "eslint": "^5.16.0"
   },
   "dependencies": {
-    "howler": "^2.0.15",
-    "jimp": "^0.2.27",
-    "node-notifier": "^5.1.2",
-    "timrjs": "^1.0.1",
-    "web-audio-api": "^0.2.2"
-  }
+    "howler": "^2.1.2",
+    "jimp": "^0.6.4",
+    "node-notifier": "^5.4.0",
+    "timrjs": "^1.0.1"
+  },
+  "build": {
+    "appId": "Pomodorino",
+    "mac": {
+      "category": "Time.Management"
+    },
+    "extraFiles": [
+      "res/"
+    ]
+  },
+  "postinstall": "electron-builder install-app-deps"
+
 }

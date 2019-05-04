@@ -1,10 +1,10 @@
+/*global __dirname process*/
 const electron = require('electron')
 const { app, BrowserWindow, Menu, Tray, nativeImage } = electron
 const Timr = require('timrjs')
 const notifier = require('node-notifier')
 const trayImg = `${__dirname}/res/tomato.png`
 const trayImgAlert = `${__dirname}/res/yomato.png`
-const { ipcMain } = require('electron');
 
 let useBiggerFonts = false
 let timer = Timr(0)
@@ -43,7 +43,7 @@ function disableAlertMode(){
   resetTray()
 }
 
-function menuClick(menuItem, browserWindow, event) {
+function menuClick(menuItem) {
   if (menuItem.id > 0) {
     disableAlertMode()
     startTimer(menuItem.id);
@@ -71,6 +71,7 @@ function generateImage(overlayText, setTrayImageClosure) {
        (overlayText.length > 1) ? 0 : 8
      : (overlayText.length > 1) ? 8 : 12
 
+  let loadedImage = null
   Jimp.read(fileName)
     .then(function (image) {
       loadedImage = image;
@@ -105,7 +106,7 @@ function finishPomodoro() {
 
 function startTimer(time) {
   timer.destroy()
-  timer = Timr(time * 60)
+  timer = Timr(time * 1)
   timer.start();
   timer.ticker(({ formattedTime, raw }) => {
     if (!alertMode){
@@ -121,7 +122,7 @@ function startTimer(time) {
       tray.setImage(raw.currentSeconds % 2 == 0 ? trayImgAlert : trayImg)      
     }
   });
-  timer.finish((self) => {
+  timer.finish(() => {
     if (!alertMode){
       finishPomodoro();
       resetTray();
