@@ -1,7 +1,7 @@
 {
   "name": "pomodorino",
   "productName": "Pomodorino",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -26,7 +26,35 @@
   "build": {
     "appId": "Pomodorino",
     "mac": {
-      "category": "Time.Management"
+      "category": "Time.Management",
+      "target": [
+        {
+          "target": "dmg"
+        },
+        {
+          "target": "tar.gz"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage"
+        },
+        {
+          "target": "tar.gz"
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable"
+        },
+        {
+          "target": "zip"
+        }
+      ]
     }
   },
   "postinstall": "electron-builder install-app-deps"
