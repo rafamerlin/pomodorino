@@ -1,4 +1,15 @@
-import {app, BrowserWindow} from 'electron'
+import {app, BrowserWindow, Menu, Tray, NativeImage} from 'electron';
+import {Timr} from 'timrjs';
+import {NodeNotifier } from 'node-notifier'
+
+// const trayImg = `${__dirname}/res/tomato.png`
+// const trayImgAlert = `${__dirname}/res/yomato.png`
+
+let useBiggerFonts = false
+let timer: Timr = Timr(0);
+let tray = null
+let alertMode = false
+let invisibleRenderer = null;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -28,7 +39,7 @@ function createWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
