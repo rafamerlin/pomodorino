@@ -5,7 +5,9 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron main.js",
+    "build": "tsc",
+    "prestart": "yarn run build",
+    "start": "electron ./dist/main.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "release": "build"
@@ -13,9 +15,10 @@
   "author": "Rafael Merlin",
   "license": "MIT",
   "devDependencies": {
+    "@types/howler": "^2.1.0",
     "electron": "^5.0.1",
     "electron-builder": "^20.39.0",
-    "eslint": "^5.16.0"
+    "typescript": "^3.5.1"
   },
   "dependencies": {
     "howler": "^2.1.2",
