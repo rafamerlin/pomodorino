@@ -1,5 +1,8 @@
 {
     "compilerOptions": {
+      "baseUrl": ".",
+      "paths": { "*": ["types/*"] },
+        // "allowSyntheticDefaultImports":true,
         "target": "es5",
         "module": "commonjs",
         "moduleResolution": "node", 
