@@ -1,11 +1,11 @@
-import {app, BrowserWindow, Menu, Tray, nativeImage} from 'electron';
+import { app, BrowserWindow, Menu, Tray, nativeImage, MenuItem } from 'electron';
 /*
   Timr Must be imported like this, or when we transpile it it will convert `Timr(0);` 
   to `timrjs_1.default(0);` which will break things.
 */
 import * as Timr from 'timrjs';
 import * as notifier from 'node-notifier'
-import {Alerts} from './alerts'
+import { Alerts } from './alerts'
 
 
 const dir = `${__dirname}/..`;
@@ -23,25 +23,7 @@ let alerts: Alerts = null;
 // be closed automatically when the JavaScript object is garbage collected.
 // let invisibleRenderer: Electron.BrowserWindow = null
 
-function appReady () {
-  useBiggerFonts = (process.platform == "win32")
-  tray = new Tray(trayImg)
-  const contextMenu = Menu.buildFromTemplate([
-    
-    // { id: '999', label, }
-    { id: '25', label: '25', type: 'normal', click: menuClick },
-    { id: '15', label: '15', type: 'normal', click: menuClick },
-    { id: '5', label: '5', type: 'normal', click: menuClick },
-    { type: 'separator' },
-    { id: '-1', label: 'Quit', type: 'normal', click: menuClick },
-  ])
-  resetTray()
-  tray.setContextMenu(contextMenu)
-  tray.on('click', () => {
-    if (alertMode){
-      disableAlertMode();
-    }
-  })
+function appReady() {
   let invisibleRenderer = new BrowserWindow(
     {
       width: 100,
@@ -51,6 +33,23 @@ function appReady () {
     })
   invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
   alerts = new Alerts(invisibleRenderer, `${dir}/res/audio/ring-fixed-bitrate.mp3`);
+  useBiggerFonts = (process.platform == "win32")
+  tray = new Tray(trayImg)
+  const contextMenu = Menu.buildFromTemplate([
+    { id: '999', label: "Sound", type: "checkbox", checked: alerts.shouldPlayAudio, click: (item: MenuItem) => alerts.configurePlayAudio(item.checked) },
+    { id: '25', label: '25', type: 'normal', click: menuClick },
+    { id: '15', label: '15', type: 'normal', click: menuClick },
+    { id: '5', label: '5', type: 'normal', click: menuClick },
+    { type: 'separator' },
+    { id: '-1', label: 'Quit', type: 'normal', click: menuClick },
+  ])
+  resetTray()
+  tray.setContextMenu(contextMenu)
+  tray.on('click', () => {
+    if (alertMode) {
+      disableAlertMode();
+    }
+  })
 }
 
 // This method will be called when Electron has finished
@@ -78,11 +77,11 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-function enableAlertMode(){
+function enableAlertMode() {
   alertMode = true;
 }
 
-function disableAlertMode(){
+function disableAlertMode() {
   timer.stop()
   alertMode = false
   resetTray()
@@ -112,9 +111,9 @@ function generateImage(overlayText, setTrayImageClosure) {
   let Jimp = require("jimp");
   let fileName = `${dir}/res/tomato.png`;
   let calculatedY = useBiggerFonts ? 0 : 8
-  let calculatedX = useBiggerFonts ? 
-       (overlayText.length > 1) ? 0 : 8
-     : (overlayText.length > 1) ? 8 : 12
+  let calculatedX = useBiggerFonts ?
+    (overlayText.length > 1) ? 0 : 8
+    : (overlayText.length > 1) ? 8 : 12
 
   let loadedImage = null
   Jimp.read(fileName)
@@ -147,10 +146,10 @@ function finishPomodoro() {
 
 function startTimer(time) {
   timer.destroy()
-  timer = Timr(time * 1)
+  timer = Timr(time * 60)
   timer.start();
   timer.ticker(({ formattedTime, raw }) => {
-    if (!alertMode){
+    if (!alertMode) {
       tray.setToolTip(`Pomodorino: ${formattedTime} left`)
       if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
         updateTray(+raw.currentMinutes + 1)
@@ -159,12 +158,12 @@ function startTimer(time) {
         updateTray(+raw.currentSeconds)
       }
     }
-    else{  
-      tray.setImage(raw.currentSeconds % 2 == 0 ? trayImgAlert : trayImg)      
+    else {
+      tray.setImage(raw.currentSeconds % 2 == 0 ? trayImgAlert : trayImg)
     }
   });
   timer.finish(() => {
-    if (!alertMode){
+    if (!alertMode) {
       finishPomodoro();
       resetTray();
       timer.start(1500);
