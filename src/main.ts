@@ -43,7 +43,7 @@ function appReady () {
       show: false,
       webPreferences: { nodeIntegration: true }
     })
-  invisibleRenderer.loadURL(`file://${dir}/renderer.html`);
+  invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
 }
 
 // This method will be called when Electron has finished
@@ -63,9 +63,9 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    appReady()
-  }
+  // if (mainWindow === null) {
+  //   appReady()
+  // }
 })
 
 // In this file you can include the rest of your app's specific main process
@@ -129,7 +129,7 @@ function generateImage(overlayText, setTrayImageClosure) {
 
 function finishPomodoro() {
   let AudioConfig = {
-    source: `${dir}/audio/ring-fixed-bitrate.mp3`
+    source: `${dir}/res/audio/ring-fixed-bitrate.mp3`
   };
 
   notifier.notify({

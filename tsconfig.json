@@ -7,13 +7,13 @@
         "module": "commonjs",
         "moduleResolution": "node", 
         "sourceMap": true,
-        "outDir": "dist",
+        "outDir": "app",
         "types": [
             "node"
         ]
     },
     "exclude": [
         "node_modules/",
-        "dist/"
+        "app/"
     ]
 }
