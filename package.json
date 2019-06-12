@@ -11,6 +11,7 @@
     "pack": "electron-builder --dir",
     "predist": "yarn run build",
     "dist": "electron-builder",
+    "prerelease": "yarn run build",
     "release": "build"
   },
   "author": "Rafael Merlin",

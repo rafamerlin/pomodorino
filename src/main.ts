@@ -5,6 +5,8 @@ import {app, BrowserWindow, Menu, Tray, nativeImage} from 'electron';
 */
 import * as Timr from 'timrjs';
 import * as notifier from 'node-notifier'
+import {Alerts} from './alerts'
+
 
 const dir = `${__dirname}/..`;
 const trayImg = `${dir}/res/tomato.png`
@@ -15,14 +17,18 @@ let timer = Timr(0);
 let tray = null
 let alertMode = false
 
+let alerts: Alerts = null;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let invisibleRenderer: Electron.BrowserWindow = null
+// let invisibleRenderer: Electron.BrowserWindow = null
 
 function appReady () {
   useBiggerFonts = (process.platform == "win32")
   tray = new Tray(trayImg)
   const contextMenu = Menu.buildFromTemplate([
+    
+    // { id: '999', label, }
     { id: '25', label: '25', type: 'normal', click: menuClick },
     { id: '15', label: '15', type: 'normal', click: menuClick },
     { id: '5', label: '5', type: 'normal', click: menuClick },
@@ -36,7 +42,7 @@ function appReady () {
       disableAlertMode();
     }
   })
-  invisibleRenderer = new BrowserWindow(
+  let invisibleRenderer = new BrowserWindow(
     {
       width: 100,
       height: 100,
@@ -44,6 +50,7 @@ function appReady () {
       webPreferences: { nodeIntegration: true }
     })
   invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
+  alerts = new Alerts(invisibleRenderer, `${dir}/res/audio/ring-fixed-bitrate.mp3`);
 }
 
 // This method will be called when Electron has finished
@@ -128,23 +135,19 @@ function generateImage(overlayText, setTrayImageClosure) {
 }
 
 function finishPomodoro() {
-  let AudioConfig = {
-    source: `${dir}/res/audio/ring-fixed-bitrate.mp3`
-  };
-
   notifier.notify({
     'title': 'Pomodorino',
     'message': 'Your pomodoro has finished',
     'icon': `${dir}/res/tomato.png`,
     wait: true
   });
-  invisibleRenderer.webContents.send('play-audio', AudioConfig);
+  alerts.playAudio();
   enableAlertMode()
 }
 
 function startTimer(time) {
   timer.destroy()
-  timer = Timr(time * 60)
+  timer = Timr(time * 1)
   timer.start();
   timer.ticker(({ formattedTime, raw }) => {
     if (!alertMode){
