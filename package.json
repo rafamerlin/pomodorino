@@ -3,12 +3,13 @@
   "productName": "Pomodorino",
   "version": "0.2.1",
   "description": "",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
     "build": "tsc",
     "prestart": "yarn run build",
-    "start": "electron ./dist/main.js",
+    "start": "electron ./app/main.js",
     "pack": "electron-builder --dir",
+    "predist": "yarn run build",
     "dist": "electron-builder",
     "release": "build"
   },
@@ -29,6 +30,13 @@
   },
   "build": {
     "appId": "Pomodorino",
+    "files": [
+      "build/**/*",
+      "res/**/*",
+      "app/**/*",
+      "src/**/*.html",
+      "src/**/*.css"
+    ],
     "mac": {
       "category": "Time.Management",
       "target": [

@@ -28,3 +28,4 @@ node_modules/
 *.sln
 *.log
 mplayer.exe
+/app/

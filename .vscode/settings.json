@@ -1,7 +1,10 @@
 // Place your settings in this file to overwrite default and user settings.
 {
 	// Configure glob patterns for excluding files and folders.
-	"files.exclude": {
-		"dist/**": {},
+	// "files.exclude": {
+	// 	"app/**": {},
+	// },
+	"search.exclude": {
+		"**/app": true
 	}
 }
