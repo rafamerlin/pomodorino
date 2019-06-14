@@ -4,9 +4,7 @@ import { app, BrowserWindow, Menu, Tray, nativeImage, MenuItem } from 'electron'
   to `timrjs_1.default(0);` which will break things.
 */
 import * as Timr from 'timrjs';
-import * as notifier from 'node-notifier'
 import { Alerts } from './alerts'
-
 
 const dir = `${__dirname}/..`;
 const trayImg = `${dir}/res/tomato.png`
@@ -32,11 +30,16 @@ function appReady() {
       webPreferences: { nodeIntegration: true }
     })
   invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
-  alerts = new Alerts(invisibleRenderer, `${dir}/res/audio/ring-fixed-bitrate.mp3`);
+  alerts = new Alerts(invisibleRenderer, `${dir}`);
   useBiggerFonts = (process.platform == "win32")
   tray = new Tray(trayImg)
   const contextMenu = Menu.buildFromTemplate([
-    { id: '999', label: "Sound", type: "checkbox", checked: alerts.shouldPlayAudio, click: (item: MenuItem) => alerts.configurePlayAudio(item.checked) },
+    {
+      id: '900', label: "Config", type: "submenu", submenu: [
+        { id: '999', label: "Sound", type: "checkbox", checked: alerts.shouldPlayAudio, click: (item: MenuItem) => alerts.configurePlayAudio(item.checked) },
+        { id: '998', label: "Notification", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureNotification(item.checked) },
+      ]
+    },
     { id: '25', label: '25', type: 'normal', click: menuClick },
     { id: '15', label: '15', type: 'normal', click: menuClick },
     { id: '5', label: '5', type: 'normal', click: menuClick },
@@ -134,12 +137,7 @@ function generateImage(overlayText, setTrayImageClosure) {
 }
 
 function finishPomodoro() {
-  notifier.notify({
-    'title': 'Pomodorino',
-    'message': 'Your pomodoro has finished',
-    'icon': `${dir}/res/tomato.png`,
-    wait: true
-  });
+  alerts.notify();
   alerts.playAudio();
   enableAlertMode()
 }
