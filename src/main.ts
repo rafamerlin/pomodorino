@@ -13,7 +13,6 @@ const trayImgAlert = `${dir}/res/yomato.png`
 let useBiggerFonts = false
 let timer = Timr(0);
 let tray = null
-let alertMode = false
 
 let alerts: Alerts = null;
 
@@ -38,6 +37,7 @@ function appReady() {
       id: '900', label: "Config", type: "submenu", submenu: [
         { id: '999', label: "Sound", type: "checkbox", checked: alerts.shouldPlayAudio, click: (item: MenuItem) => alerts.configurePlayAudio(item.checked) },
         { id: '998', label: "Notification", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureNotification(item.checked) },
+        // { id: '997', label: "Blinking", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureBlinking(item.checked) },
       ]
     },
     { id: '25', label: '25', type: 'normal', click: menuClick },
@@ -49,7 +49,7 @@ function appReady() {
   resetTray()
   tray.setContextMenu(contextMenu)
   tray.on('click', () => {
-    if (alertMode) {
+    if (alerts.getAlertMode) {
       disableAlertMode();
     }
   })
@@ -81,12 +81,12 @@ app.on('activate', () => {
 // code. You can also put them in separate files and require them here.
 
 function enableAlertMode() {
-  alertMode = true;
+  alerts.setAlertMode(true);
 }
 
 function disableAlertMode() {
   timer.stop()
-  alertMode = false
+  alerts.setAlertMode(false);
   resetTray()
 }
 
@@ -137,8 +137,7 @@ function generateImage(overlayText, setTrayImageClosure) {
 }
 
 function finishPomodoro() {
-  alerts.notify();
-  alerts.playAudio();
+  alerts.callAlerts();
   enableAlertMode()
 }
 
@@ -147,7 +146,7 @@ function startTimer(time) {
   timer = Timr(time * 60)
   timer.start();
   timer.ticker(({ formattedTime, raw }) => {
-    if (!alertMode) {
+    if (!alerts.getAlertMode()) {
       tray.setToolTip(`Pomodorino: ${formattedTime} left`)
       if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
         updateTray(+raw.currentMinutes + 1)
@@ -161,7 +160,7 @@ function startTimer(time) {
     }
   });
   timer.finish(() => {
-    if (!alertMode) {
+    if (!alerts.getAlertMode()) {
       finishPomodoro();
       resetTray();
       timer.start(1500);

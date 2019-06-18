@@ -1,9 +1,11 @@
 import * as notifier from 'node-notifier'
 
 export class Alerts {
+    private alertMode = false;
+    shouldBlink : boolean = true;
     shouldPlayAudio: boolean = true;
     shouldNotify: boolean = true;
-    // shouldBlink: boolean = true;
+
     readonly renderer: Electron.BrowserWindow = null;
     readonly audioFile: string; 
     readonly notificationIcon: string;
@@ -14,6 +16,10 @@ export class Alerts {
         this.notificationIcon = `${baseDir}/res/tomato.png`;
     }
 
+    configureBlinking(onOff : boolean){
+        this.shouldBlink = onOff;
+    }
+
     configurePlayAudio(onOff: boolean) {
         this.shouldPlayAudio = onOff;
     }
@@ -22,11 +28,23 @@ export class Alerts {
         this.shouldNotify = onOff;
     }
 
-    // configureBlinking(onOff: boolean){
-    //     this.shouldBlink = onOff;
-    // }
+    setAlertMode(onOff: boolean) {
+        this.alertMode = onOff;
+    }
 
-    playAudio(){
+    getAlertMode(){
+        // if (!this.shouldBlink) return false;
+        
+        return this.alertMode;
+    }
+
+    callAlerts(){
+        this.playAudio();
+        this.notify();
+        this.setAlertMode(true);
+    }
+
+    private playAudio(){
         if (!this.shouldPlayAudio) return;
 
         let AudioConfig = {
@@ -36,7 +54,7 @@ export class Alerts {
         this.renderer.webContents.send('play-audio', AudioConfig);
     }
 
-    notify(){
+    private notify(){
         if (!this.shouldNotify) return;
 
         notifier.notify({
