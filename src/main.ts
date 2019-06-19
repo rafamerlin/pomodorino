@@ -1,24 +1,16 @@
-import { app, BrowserWindow, Menu, Tray, nativeImage, MenuItem } from 'electron';
-/*
-  Timr Must be imported like this, or when we transpile it it will convert `Timr(0);` 
-  to `timrjs_1.default(0);` which will break things.
-*/
-import * as Timr from 'timrjs';
-import { Alerts } from './alerts'
+import { app, BrowserWindow, Menu, Tray, MenuItem } from 'electron';
+import { Alerts } from './alerts';
+import { PomoEngine } from './pomoEngine';
 
 const dir = `${__dirname}/..`;
-const trayImg = `${dir}/res/tomato.png`
-const trayImgAlert = `${dir}/res/yomato.png`
-
-let useBiggerFonts = false
-let timer = Timr(0);
-let tray = null
-
-let alerts: Alerts = null;
+const defaultTrayImg = `${dir}/res/tomato.png`
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 // let invisibleRenderer: Electron.BrowserWindow = null
+let alerts: Alerts = null;
+let pomo: PomoEngine = null;
+let tray: Tray = null
 
 function appReady() {
   let invisibleRenderer = new BrowserWindow(
@@ -30,8 +22,8 @@ function appReady() {
     })
   invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
   alerts = new Alerts(invisibleRenderer, `${dir}`);
-  useBiggerFonts = (process.platform == "win32")
-  tray = new Tray(trayImg)
+  tray = new Tray(defaultTrayImg)
+  pomo = new PomoEngine(alerts, tray, dir);
   const contextMenu = Menu.buildFromTemplate([
     {
       id: '900', label: "Config", type: "submenu", submenu: [
@@ -40,19 +32,13 @@ function appReady() {
         // { id: '997', label: "Blinking", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureBlinking(item.checked) },
       ]
     },
-    { id: '25', label: '25', type: 'normal', click: menuClick },
-    { id: '15', label: '15', type: 'normal', click: menuClick },
-    { id: '5', label: '5', type: 'normal', click: menuClick },
+    { id: '25', label: '25', type: 'normal', click: _ => pomo.startPomodoro(25) },
+    { id: '15', label: '15', type: 'normal', click: _ => pomo.startPomodoro(15) },
+    { id: '5', label: '5', type: 'normal', click: _ => pomo.startPomodoro(5) },
     { type: 'separator' },
-    { id: '-1', label: 'Quit', type: 'normal', click: menuClick },
+    { id: '-1', label: 'Quit', type: 'normal', click: _ => app.quit() },
   ])
-  resetTray()
-  tray.setContextMenu(contextMenu)
-  tray.on('click', () => {
-    if (alerts.getAlertMode) {
-      disableAlertMode();
-    }
-  })
+  tray.setContextMenu(contextMenu);
 }
 
 // This method will be called when Electron has finished
@@ -76,94 +62,3 @@ app.on('activate', () => {
   //   appReady()
   // }
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-
-function enableAlertMode() {
-  alerts.setAlertMode(true);
-}
-
-function disableAlertMode() {
-  timer.stop()
-  alerts.setAlertMode(false);
-  resetTray()
-}
-
-function menuClick(menuItem) {
-  if (menuItem.id > 0) {
-    disableAlertMode()
-    startTimer(menuItem.id);
-  } else if (menuItem.id == -1) {
-    app.quit();
-  }
-}
-
-function updateTray(timeLeft) {
-  generateImage(timeLeft.toString(), (img) => {
-    tray.setImage(img);
-  });
-}
-
-function resetTray() {
-  tray.setToolTip('Pomodorino by Merurino')
-  tray.setImage(trayImg)
-}
-
-function generateImage(overlayText, setTrayImageClosure) {
-  let Jimp = require("jimp");
-  let fileName = `${dir}/res/tomato.png`;
-  let calculatedY = useBiggerFonts ? 0 : 8
-  let calculatedX = useBiggerFonts ?
-    (overlayText.length > 1) ? 0 : 8
-    : (overlayText.length > 1) ? 8 : 12
-
-  let loadedImage = null
-  Jimp.read(fileName)
-    .then(function (image) {
-      loadedImage = image;
-      return Jimp.loadFont(useBiggerFonts ? Jimp.FONT_SANS_32_BLACK : Jimp.FONT_SANS_16_BLACK);
-    })
-    .then(function (font) {
-      loadedImage.print(font, calculatedX, calculatedY, overlayText)
-        .getBuffer(Jimp.AUTO, function (err, src) {
-          let bufferedImage = nativeImage.createFromBuffer(src);
-          setTrayImageClosure(bufferedImage);
-        });
-    })
-    .catch(function (err) {
-      console.error(err);
-    });
-}
-
-function finishPomodoro() {
-  alerts.callAlerts();
-  enableAlertMode()
-}
-
-function startTimer(time) {
-  timer.destroy()
-  timer = Timr(time * 60)
-  timer.start();
-  timer.ticker(({ formattedTime, raw }) => {
-    if (!alerts.getAlertMode()) {
-      tray.setToolTip(`Pomodorino: ${formattedTime} left`)
-      if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
-        updateTray(+raw.currentMinutes + 1)
-      }
-      if (raw.currentMinutes == 0 && raw.currentSeconds != 0) {
-        updateTray(+raw.currentSeconds)
-      }
-    }
-    else {
-      tray.setImage(raw.currentSeconds % 2 == 0 ? trayImgAlert : trayImg)
-    }
-  });
-  timer.finish(() => {
-    if (!alerts.getAlertMode()) {
-      finishPomodoro();
-      resetTray();
-      timer.start(1500);
-    }
-  });
-}

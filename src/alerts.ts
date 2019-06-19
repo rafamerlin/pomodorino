@@ -34,7 +34,6 @@ export class Alerts {
 
     getAlertMode(){
         // if (!this.shouldBlink) return false;
-        
         return this.alertMode;
     }
 
