@@ -1,16 +1,14 @@
-import { app, BrowserWindow, Menu, Tray, MenuItem } from 'electron';
+import { app, BrowserWindow, Menu, MenuItem } from 'electron';
 import { Alerts } from './alerts';
 import { PomoEngine } from './pomoEngine';
 
 const dir = `${__dirname}/..`;
-const defaultTrayImg = `${dir}/res/tomato.png`
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 // let invisibleRenderer: Electron.BrowserWindow = null
 let alerts: Alerts = null;
 let pomo: PomoEngine = null;
-let tray: Tray = null
 
 function appReady() {
   let invisibleRenderer = new BrowserWindow(
@@ -22,23 +20,7 @@ function appReady() {
     })
   invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
   alerts = new Alerts(invisibleRenderer, `${dir}`);
-  tray = new Tray(defaultTrayImg)
-  pomo = new PomoEngine(alerts, tray, dir);
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      id: '900', label: "Config", type: "submenu", submenu: [
-        { id: '999', label: "Sound", type: "checkbox", checked: alerts.shouldPlayAudio, click: (item: MenuItem) => alerts.configurePlayAudio(item.checked) },
-        { id: '998', label: "Notification", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureNotification(item.checked) },
-        // { id: '997', label: "Blinking", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureBlinking(item.checked) },
-      ]
-    },
-    { id: '25', label: '25', type: 'normal', click: _ => pomo.startPomodoro(25) },
-    { id: '15', label: '15', type: 'normal', click: _ => pomo.startPomodoro(15) },
-    { id: '5', label: '5', type: 'normal', click: _ => pomo.startPomodoro(5) },
-    { type: 'separator' },
-    { id: '-1', label: 'Quit', type: 'normal', click: _ => app.quit() },
-  ])
-  tray.setContextMenu(contextMenu);
+  pomo = new PomoEngine(alerts, GenerateContextMenu(), dir);
 }
 
 // This method will be called when Electron has finished
@@ -62,3 +44,20 @@ app.on('activate', () => {
   //   appReady()
   // }
 })
+
+function GenerateContextMenu(): Menu {
+  return Menu.buildFromTemplate([
+    {
+      id: '900', label: "Config", type: "submenu", submenu: [
+        { id: '999', label: "Sound", type: "checkbox", checked: alerts.shouldPlayAudio, click: (item: MenuItem) => alerts.configurePlayAudio(item.checked) },
+        { id: '998', label: "Notification", type: "checkbox", checked: alerts.shouldNotify, click: (item: MenuItem) => alerts.configureNotification(item.checked) },
+        { id: '997', label: "Blinking", type: "checkbox", checked: alerts.shouldBlink, click: (item: MenuItem) => alerts.configureBlinking(item.checked) },
+      ]
+    },
+    { id: '25', label: '25', type: 'normal', click: _ => pomo.startPomodoro(25) },
+    { id: '15', label: '15', type: 'normal', click: _ => pomo.startPomodoro(15) },
+    { id: '5', label: '5', type: 'normal', click: _ => pomo.startPomodoro(5) },
+    { type: 'separator' },
+    { id: '-1', label: 'Quit', type: 'normal', click: _ => app.quit() },
+  ]);
+}
