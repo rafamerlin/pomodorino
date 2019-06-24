@@ -1,8 +1,7 @@
-import * as notifier from 'node-notifier'
+import * as Notifier from 'node-notifier'
 
 export class Alerts {
-    private alertMode = false;
-    shouldBlink : boolean = true;
+    shouldBlink: boolean = true;
     shouldPlayAudio: boolean = true;
     shouldNotify: boolean = true;
 
@@ -16,10 +15,6 @@ export class Alerts {
         this.notificationIcon = `${baseDir}/res/tomato.png`;
     }
 
-    configureBlinking(onOff : boolean){
-        this.shouldBlink = onOff;
-    }
-
     configurePlayAudio(onOff: boolean) {
         this.shouldPlayAudio = onOff;
     }
@@ -28,19 +23,17 @@ export class Alerts {
         this.shouldNotify = onOff;
     }
 
-    setAlertMode(onOff: boolean) {
-        this.alertMode = onOff;
+    configureBlinking(onOff: boolean) {
+        this.shouldBlink = onOff;
     }
 
-    getAlertMode(){
-        // if (!this.shouldBlink) return false;
-        return this.alertMode;
+    getShouldBlink(){
+        return this.shouldBlink;
     }
 
     callAlerts(){
         this.playAudio();
         this.notify();
-        this.setAlertMode(true);
     }
 
     private playAudio(){
@@ -56,16 +49,12 @@ export class Alerts {
     private notify(){
         if (!this.shouldNotify) return;
 
-        notifier.notify({
+        Notifier.notify({
             'title': 'Pomodorino',
             'message': 'Your pomodoro has finished',
             'icon': this.notificationIcon,
+            'sound': false,
             wait: true
         });
     }
-
-    // blink(){
-    //     if (!this.shouldBlink) return;
-
-    // }
 }
