@@ -1,4 +1,4 @@
-import * as Notifier from 'node-notifier'
+import {Notification} from "electron"
 
 export class Alerts {
     shouldBlink: boolean = true;
@@ -49,12 +49,13 @@ export class Alerts {
     private notify(){
         if (!this.shouldNotify) return;
 
-        Notifier.notify({
-            'title': 'Pomodorino',
-            'message': 'Your pomodoro has finished',
-            'icon': this.notificationIcon,
-            'sound': false,
-            wait: true
+        let n = new Notification({
+            silent: true,
+            title: "Pomodorino",
+            body: "Your pomodoro has finished",
+            icon: this.notificationIcon
         });
+        
+        n.show();
     }
 }

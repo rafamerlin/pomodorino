@@ -23,6 +23,7 @@ export class PomoEngine {
         this.alertTrayImg = `${baseDir}/res/yomato.png`
         this.tray = new Tray(this.defaultTrayImg);
         this.tray.setContextMenu(menu);
+        this.tray.on('click', () => this.trayClicked());
         this.timer = Timr(0);
 
         this.alert = alert;
@@ -31,7 +32,7 @@ export class PomoEngine {
 
     startPomodoro(minutes: number) {
         this.reset();
-        this.timer = Timr(minutes * 1);
+        this.timer = Timr(minutes * 60);
         this.timer.ticker(({ formattedTime, raw }) => {
             if (this.blinkingMode) {
                 this.tray.setImage(raw.currentSeconds % 2 == 0 ? this.alertTrayImg : this.defaultTrayImg)
@@ -97,5 +98,9 @@ export class PomoEngine {
                         setTrayImageClosure(bufferedImage);
                     });
             });
+    }
+
+    trayClicked(){
+        if(this.blinkingMode) this.reset();
     }
 }
