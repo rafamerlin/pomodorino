@@ -14,7 +14,7 @@
     "prerelease": "yarn run build",
     "release": "build"
   },
-  "author": "Rafael Merlin",
+  "author": "Rafael Merlin <rafamerlin@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/howler": "^2.1.0",
