@@ -67,8 +67,8 @@ function generateContextMenu(): Menu {
     { id: '25', label: '25', type: 'normal', click: _ => pomo.startPomodoro(25) },
     { id: '15', label: '15', type: 'normal', click: _ => pomo.startPomodoro(15) },
     { id: '5', label: '5', type: 'normal', click: _ => pomo.startPomodoro(5) },
-    { type: 'separator' },
     { id: '-2', label: 'Cancel', type: 'normal', click: _ => pomo.reset() },
+    { type: 'separator' },
     { id: '-1', label: 'Quit', type: 'normal', click: _ => cleanUpAndQuit() },
   ]);
 }
