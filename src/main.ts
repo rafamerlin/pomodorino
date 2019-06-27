@@ -1,8 +1,9 @@
 import { app, BrowserWindow, Menu, MenuItem } from 'electron';
 import { Alerts } from './alerts';
 import { PomoEngine } from './pomoEngine';
+import * as path from 'path';
 
-const dir = `${__dirname}/..`;
+const dir = path.join(__dirname,'/..');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -22,7 +23,7 @@ function appReady() {
       show: false,
       webPreferences: { nodeIntegration: true }
     })
-  invisibleRenderer.loadURL(`file://${dir}/src/renderer.html`);
+  invisibleRenderer.loadURL(`file://${path.join(dir,'/src/renderer.html')}`);
   alerts = new Alerts(invisibleRenderer, `${dir}`);
   pomo = new PomoEngine(alerts, generateContextMenu(), dir);
 }

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "prestart": "yarn run build",
-    "start": "electron ./app/main.js",
+    "start": "electron ./app/main.js --no-sandbox",
     "pack": "electron-builder --dir",
     "predist": "yarn run build",
     "dist": "electron-builder",
