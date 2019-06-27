@@ -1,4 +1,6 @@
 import {Notification} from "electron"
+import * as path from 'path';
+
 
 export class Alerts {
     shouldBlink: boolean = true;
@@ -11,8 +13,8 @@ export class Alerts {
 
     constructor(renderer: Electron.BrowserWindow, baseDir: string) {
         this.renderer = renderer;
-        this.audioFile = `${baseDir}/res/audio/ring-fixed-bitrate.mp3`;
-        this.notificationIcon = `${baseDir}/res/tomato.png`;
+        this.audioFile = path.join(baseDir, '/res/audio/ring-fixed-bitrate.mp3');
+        this.notificationIcon = path.join(baseDir,'/res/tomato.png');
     }
 
     configurePlayAudio(onOff: boolean) {

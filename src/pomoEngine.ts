@@ -5,6 +5,7 @@ import { Tray, nativeImage, Menu } from 'electron';
 */
 import * as Timr from 'timrjs';
 import { Alerts } from "./alerts";
+import * as path from 'path';
 
 export class PomoEngine {
     private readonly alert: Alerts;
@@ -19,8 +20,8 @@ export class PomoEngine {
     private timer = null;
 
     constructor(alert: Alerts, menu: Menu, baseDir: string) {
-        this.defaultTrayImg = `${baseDir}/res/tomato.png`
-        this.alertTrayImg = `${baseDir}/res/yomato.png`
+        this.defaultTrayImg = path.join(baseDir,'/res/tomato.png');
+        this.alertTrayImg = path.join(baseDir,'/res/yomato.png');
         this.tray = new Tray(this.defaultTrayImg);
         this.tray.setContextMenu(menu);
         this.tray.on('click', () => this.trayClicked());
@@ -79,7 +80,7 @@ export class PomoEngine {
     private generateImage(overlayText, setTrayImageClosure) {
         let useBiggerFonts = (process.platform == "win32")
         let Jimp = require("jimp");
-        let fileName = `${this.baseDir}/res/tomato.png`;
+        let fileName = path.join(this.baseDir,'/res/tomato.png');
         let calculatedY = useBiggerFonts ? 0 : 8
         let calculatedX = useBiggerFonts ?
             (overlayText.length > 1) ? 0 : 8
