@@ -20,8 +20,8 @@ export class PomoEngine {
     private timer = null;
 
     constructor(alert: Alerts, menu: Menu, baseDir: string) {
-        this.defaultTrayImg = path.join(baseDir,'/res/tomato.png');
-        this.alertTrayImg = path.join(baseDir,'/res/yomato.png');
+        this.defaultTrayImg = path.join(baseDir, '/res/tomato.png');
+        this.alertTrayImg = path.join(baseDir, '/res/yomato.png');
         this.tray = new Tray(this.defaultTrayImg);
         this.tray.setContextMenu(menu);
         this.tray.on('click', () => this.trayClicked());
@@ -38,7 +38,7 @@ export class PomoEngine {
             if (this.blinkingMode) {
                 this.tray.setImage(raw.currentSeconds % 2 == 0 ? this.alertTrayImg : this.defaultTrayImg)
             } else {
-                this.tray.setToolTip(`Pomodorino: ${formattedTime} left`);
+                this.tray.setToolTip(`${minutes} Pomodorino: ${formattedTime} left`);
                 if (raw.currentMinutes > 0 && raw.currentSeconds == 59) {
                     this.updateTray(+raw.currentMinutes + 1)
                 }
@@ -53,21 +53,23 @@ export class PomoEngine {
         this.timer.start();
     }
 
-    reset(blinking: boolean = false) {
+    reset(cancelled: boolean = false) {
         this.blinkingMode = false;
         this.timer.destroy();
-        this.tray.setToolTip('Pomodorino by Merurino');
+        if (cancelled)
+            this.tray.setToolTip("Cancelled");
         this.tray.setImage(this.defaultTrayImg);
     }
 
     //TODO: Maybe create an eventListener here if we ever want to plug something else from outside.
     //example: https://stackoverflow.com/a/40822325/2506478
     private pomodoroFinished(minutes: number) {
+        this.tray.setToolTip(`${minutes} Pomodorino finished at ${new Date().toLocaleTimeString()}`);
         if (!this.blinkingMode) this.alert.callAlerts();
 
         this.blinkingMode = (!this.blinkingMode && this.alert.getShouldBlink());
         if (this.blinkingMode) this.timer.start();
-        
+
         if (!this.alert.getShouldBlink()) this.reset();
     }
 
@@ -80,7 +82,7 @@ export class PomoEngine {
     private generateImage(overlayText, setTrayImageClosure) {
         let useBiggerFonts = (process.platform == "win32")
         let Jimp = require("jimp");
-        let fileName = path.join(this.baseDir,'/res/tomato.png');
+        let fileName = path.join(this.baseDir, '/res/tomato.png');
         let calculatedY = useBiggerFonts ? 0 : 8
         let calculatedX = useBiggerFonts ?
             (overlayText.length > 1) ? 0 : 8
@@ -101,7 +103,7 @@ export class PomoEngine {
             });
     }
 
-    trayClicked(){
-        if(this.blinkingMode) this.reset();
+    trayClicked() {
+        if (this.blinkingMode) this.reset();
     }
 }
