@@ -32,6 +32,7 @@ export class PomoEngine {
     }
 
     startPomodoro(minutes: number) {
+        let finishedPomodoro = false;
         this.reset();
         this.timer = Timr(minutes * 60);
         this.timer.ticker(({ formattedTime, raw }) => {
@@ -48,7 +49,9 @@ export class PomoEngine {
             }
         });
         this.timer.finish(() => {
+            if (finishedPomodoro) return;
             this.pomodoroFinished(minutes);
+            finishedPomodoro = true;
         });
         this.timer.start();
     }
