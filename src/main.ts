@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu, MenuItem } from 'electron';
 import { Alerts } from './alerts';
 import { PomoEngine } from './pomoEngine';
+import { Log } from './history';
 import * as path from 'path';
 
 const dir = path.join(__dirname,'/..');
@@ -10,6 +11,7 @@ const dir = path.join(__dirname,'/..');
 // let invisibleRenderer: Electron.BrowserWindow = null
 let alerts: Alerts = null;
 let pomo: PomoEngine = null;
+let log: Log = null;
 
 function appReady() {
   //We need to add this for windows to behave properly: https://github.com/electron/electron/issues/10864
@@ -25,7 +27,8 @@ function appReady() {
     })
   invisibleRenderer.loadURL(`file://${path.join(dir,'/src/renderer.html')}`);
   alerts = new Alerts(invisibleRenderer, `${dir}`);
-  pomo = new PomoEngine(alerts, generateContextMenu(), dir);
+  log = new Log();
+  pomo = new PomoEngine(alerts, generateContextMenu(), log, dir);
 }
 
 // This method will be called when Electron has finished
