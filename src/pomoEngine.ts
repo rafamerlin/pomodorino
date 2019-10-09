@@ -6,6 +6,7 @@ import { Tray, nativeImage, Menu } from 'electron';
 import * as Timr from 'timrjs';
 import { Alerts } from "./alerts";
 import * as path from 'path';
+import { Log } from './history';
 
 export class PomoEngine {
     private readonly alert: Alerts;
@@ -13,13 +14,14 @@ export class PomoEngine {
     private readonly baseDir: string;
     private readonly defaultTrayImg: string;
     private readonly alertTrayImg: string;
+    private readonly log: Log;
 
     private blinkingMode: boolean = false;
 
     //I Couldn't get the type of Timr. I had to import it this way
     private timer = null;
 
-    constructor(alert: Alerts, menu: Menu, baseDir: string) {
+    constructor(alert: Alerts, menu: Menu, log: Log, baseDir: string) {
         this.defaultTrayImg = path.join(baseDir, '/res/tomato.png');
         this.alertTrayImg = path.join(baseDir, '/res/yomato.png');
         this.tray = new Tray(this.defaultTrayImg);
@@ -28,10 +30,12 @@ export class PomoEngine {
         this.timer = Timr(0);
 
         this.alert = alert;
+        this.log = log;
         this.baseDir = baseDir;
     }
 
     startPomodoro(minutes: number) {
+        this.log.LogStart(minutes);
         let finishedPomodoro = false;
         this.reset();
         this.timer = Timr(minutes * 60);
@@ -51,6 +55,7 @@ export class PomoEngine {
         this.timer.finish(() => {
             if (finishedPomodoro) return;
             this.pomodoroFinished(minutes);
+            this.log.LogFinish(minutes);
             finishedPomodoro = true;
         });
         this.timer.start();
@@ -59,8 +64,10 @@ export class PomoEngine {
     reset(cancelled: boolean = false) {
         this.blinkingMode = false;
         this.timer.destroy();
-        if (cancelled)
+        if (cancelled){
+            this.log.LogCancelled();
             this.tray.setToolTip("Cancelled");
+        }
         this.tray.setImage(this.defaultTrayImg);
     }
 
