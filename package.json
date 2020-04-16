@@ -1,7 +1,7 @@
 {
   "name": "pomodorino",
   "productName": "Pomodorino",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "",
   "main": "app/main.js",
   "scripts": {
@@ -26,7 +26,7 @@
   "dependencies": {
     "fs-jetpack": "^2.2.2",
     "howler": "^2.1.2",
-    "jimp": "^0.6.4",
+    "jimp": "^0.10.2",
     "node-notifier": "^5.4.0",
     "timrjs": "^1.0.1"
   },
