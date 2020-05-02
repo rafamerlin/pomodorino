@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Merurino/pomodorino.svg?branch=master)](https://travis-ci.com/Merurino/pomodorino)
+[![Build Status](https://travis-ci.com/rafamerlin/pomodorino.svg?branch=master)](https://travis-ci.com/Merurino/pomodorino)
 
 ### Pomodorino (very simple task bar pomodoro)
 I started developing this app to learn a bit about Electron. 
